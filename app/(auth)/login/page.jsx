@@ -1,5 +1,11 @@
+'use client'
+
 import { Button } from '@nextui-org/react'
+import toast from 'react-hot-toast'
 import { FcGoogle } from 'react-icons/fc'
+import { auth } from './../../../lib/firebase' // Ensure this path is correct
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { useState } from 'react'
 
 export default function Page() {
   return (
@@ -16,7 +22,6 @@ export default function Page() {
           <h1 className='text-2xl font-semibold text-center text-gray-800'>
             Login With Email
           </h1>
-
           {/* Login Form */}
           <form className='flex flex-col gap-4'>
             <input
@@ -39,7 +44,6 @@ export default function Page() {
               Login
             </Button>
           </form>
-
           {/* Forgot Password Link */}
           <div className='text-right'>
             <a
@@ -49,28 +53,18 @@ export default function Page() {
               Forgot Password?
             </a>
           </div>
-
           {/* Divider */}
           <div className='flex items-center my-4'>
             <hr className='flex-grow border-gray-300' />
             <span className='mx-2 text-gray-500'>OR</span>
             <hr className='flex-grow border-gray-300' />
           </div>
-
           {/* Social Login Button */}
-          <Button
-            color='secondary'
-            className='flex items-center justify-center gap-2'
-            fullWidth
-          >
-            <FcGoogle size={20} />
-            Sign in with Google
-          </Button>
-
+          <SignInWithGoogleComponent />
           {/* Create Account Link */}
           <div className='text-center'>
             <span className='text-gray-600'>Don't have an account? </span>
-            <a href='/create-account' className='text-blue-500 hover:underline'>
+            <a href='/sign-up' className='text-blue-500 hover:underline'>
               Create New Account
             </a>
           </div>
@@ -80,38 +74,38 @@ export default function Page() {
   )
 }
 
-// import { Button } from '@nextui-org/react'
+function SignInWithGoogleComponent() {
+  const [isLoading, setIsLoading] = useState(false)
 
-// export default function Page() {
-//   return (
-//     <main className='w-full flex justify-center items-center bg-gray-300 p-24 min-h-screen'>
-//       <section className='flex flex-col gap-3'>
-//         <div className='flex justify-center'>
-//           <img className='h-28' src='/logo.png' alt='Company logo' />
-//         </div>
-//         <div className='flex flex-col gap-3 bg-white p-10 rounded-xl min-w-[440px]'>
-//           <h1 className='font-bold text-xl'>Login With Email</h1>
-//           <form className='flex flex-col gap-3'>
-//             <input
-//               placeholder='Enter Your Email'
-//               type='email'
-//               name='user-email'
-//               id='user-email'
-//               className='px-3 py-2 rounded-xl border focus:outline-none w-full'
-//             />
-//             <input
-//               placeholder='Enter Your Password'
-//               type='password'
-//               name='user-pass'
-//               id='user-pass'
-//               className='px-3 py-2 rounded-xl border focus:outline-none w-full'
-//             />
-//             <Button color='primary'>Login</Button>
-//           </form>
-//           <hr />
-//           <Button color='primary'>Sign in with Google</Button>
-//         </div>
-//       </section>
-//     </main>
-//   )
-// }
+  const handleLogin = async () => {
+    setIsLoading(true)
+    try {
+      const provider = new GoogleAuthProvider()
+      const result = await signInWithPopup(auth, provider)
+      // You can handle the result here, e.g., redirecting the user or storing user info
+      toast.success('Successfully signed in with Google!')
+    } catch (error) {
+      // It's good to log the error for debugging purposes
+      console.error('Google Sign-In Error:', error)
+      toast.error(
+        error.message || 'Something went wrong during Google Sign-In.'
+      )
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <Button
+      color='secondary'
+      className='flex items-center justify-center gap-2'
+      fullWidth
+      isLoading={isLoading}
+      isDisabled={isLoading}
+      onClick={handleLogin}
+    >
+      <FcGoogle size={20} />
+      Sign in with Google
+    </Button>
+  )
+}

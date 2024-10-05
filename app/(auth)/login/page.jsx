@@ -5,9 +5,20 @@ import toast from 'react-hot-toast'
 import { FcGoogle } from 'react-icons/fc'
 import { auth } from './../../../lib/firebase' // Ensure this path is correct
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useAuth } from '@/context/AuthContext'
+import { useRouter } from 'next/navigation'
 
 export default function Page() {
+  const { user } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (user) {
+      router.push('/dashboard')
+    }
+  }, [user])
+
   return (
     <main className='w-full flex justify-center items-center bg-gray-100 p-4 min-h-screen'>
       <section className='flex flex-col gap-6 w-full max-w-md'>

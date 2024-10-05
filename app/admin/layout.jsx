@@ -17,11 +17,13 @@ export default function Layout({ children }) {
 function AdminChecking({ children }) {
   const { user, isLoading } = useAuth()
   const router = useRouter()
+
   useEffect(() => {
+    // Redirect to login if user is not logged in and not loading
     if (!user && !isLoading) {
       router.push('/login')
     }
-  }, [user, isLoading])
+  }, [user, isLoading, router]) // Include `router` in the dependency array
 
   if (isLoading) {
     return (
@@ -38,5 +40,6 @@ function AdminChecking({ children }) {
       </div>
     )
   }
+
   return <AdminLayout>{children}</AdminLayout>
 }

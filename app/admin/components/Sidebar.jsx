@@ -10,10 +10,12 @@ import {
   ChartColumnStacked,
   Slack,
   LogOut,
+  ShieldCheck,
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import toast from 'react-hot-toast'
+import { signOut } from 'firebase/auth'
 import { auth } from './../../../lib/firebase'
 
 export default function SideBar() {
@@ -58,6 +60,11 @@ export default function SideBar() {
       link: '/admin/collection',
       icon: <Shapes className='h-5 w-5' />,
     },
+    {
+      name: 'Admins',
+      link: '/admin/admins',
+      icon: <ShieldCheck className='h-5 w-5' />,
+    },
   ]
 
   return (
@@ -79,11 +86,16 @@ export default function SideBar() {
         <button
           onClick={async () => {
             try {
-              await toast.promise(signOut(auth), {
-                error: (e) => e?.message,
-                success: () => toast.success('Logged out successfully'),
-                loading: () => toast.loading('Signing out...'),
-              })
+              // Clear any existing toasts
+              toast.dismiss()
+
+              // Show a loading toast before signing out
+              // toast.loading('Signing out...')
+
+              await signOut(auth)
+
+              // Show success message
+              toast.success('Logged out successfully')
             } catch (error) {
               toast.error(error?.message)
             }

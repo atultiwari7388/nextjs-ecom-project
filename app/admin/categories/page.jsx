@@ -1,7 +1,13 @@
+'use client'
+
+import Form from './components/Form'
+import ListView from './components/ListView'
+
 export default function Page() {
   return (
-    <main className='p-6'>
-      <h1>Categories Page</h1>
+    <main className='p-5 flex gap-5'>
+      <Form />
+      <ListView />
     </main>
   )
 }

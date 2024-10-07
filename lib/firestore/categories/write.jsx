@@ -1,5 +1,12 @@
 import { db, storage } from '@/lib/firebase'
-import { collection, doc, setDoc, Timestamp } from 'firebase/firestore'
+import {
+  collection,
+  doc,
+  setDoc,
+  Timestamp,
+  deleteDoc,
+  updateDoc,
+} from 'firebase/firestore'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 
 export const createNewCategory = async ({ data, image }) => {
@@ -24,4 +31,46 @@ export const createNewCategory = async ({ data, image }) => {
     imageUrl: imageUrl,
     timestampCreate: Timestamp.now(),
   })
+}
+
+export const updateCategory = async ({ data, image }) => {
+  if (!data?.name) {
+    throw new Error('Name is Required')
+  }
+  if (!data?.slug) {
+    throw new Error('Slug is Required')
+  }
+  if (!data?.id) {
+    throw new Error('Id is Required')
+  }
+  const id = data?.id
+
+  let imageUrl = data?.imageUrl
+
+  if (image) {
+    const imageRef = ref(storage, `categories/${id}`)
+    await uploadBytes(imageRef, image)
+    imageUrl = await getDownloadURL(imageRef)
+  }
+
+  await updateDoc(doc(db, `categories/${id}`), {
+    ...data,
+    imageUrl: imageUrl,
+    timestampUpdate: Timestamp.now(),
+  })
+}
+
+export const deleteCategory = async ({ id }) => {
+  if (!id) {
+    throw new Error('Id is required')
+  }
+
+  try {
+    const categoryDocRef = doc(db, `categories/${id}`)
+    await deleteDoc(categoryDocRef)
+    console.log(`Category with id ${id} deleted successfully.`)
+  } catch (error) {
+    console.error('Error deleting category:', error)
+    throw new Error(error.message)
+  }
 }

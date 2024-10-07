@@ -52,7 +52,7 @@ export default function AdminLayout({ children }) {
       {/* Overlay when sidebar is open on mobile */}
       {isOpen && (
         <div
-          className='fixed inset-0 bg-black opacity-50 z-40 md:hidden'
+          className='fixed inset-0 bg-black opacity-50 z-50 md:hidden'
           onClick={toggleSidebar}
           aria-hidden='true'
         ></div>

@@ -1,14 +1,44 @@
 'use client'
 
 import { Button } from '@nextui-org/react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
-import { createNewCategory } from './../../../../lib/firestore/categories/write'
+import {
+  createNewCategory,
+  updateCategory,
+} from './../../../../lib/firestore/categories/write'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { getCategory } from './../../../../lib/firestore/categories/read_server'
 
 export default function Form() {
   const [data, setData] = useState({})
   const [image, setImage] = useState(null)
   const [isLoading, setIsLoading] = useState(null)
+
+  const router = useRouter()
+
+  const searchParams = useSearchParams()
+  const id = searchParams.get('id')
+
+  const fetchData = async () => {
+    try {
+      const res = await getCategory({ id: id })
+      if (!res) {
+        toast.error('Category not found')
+      } else {
+        setData(res)
+      }
+    } catch (error) {
+      console.error(error?.message)
+      toast.error(error?.message || 'An error occurred')
+    }
+  }
+
+  useEffect(() => {
+    if (id) {
+      fetchData()
+    }
+  }, [id])
 
   const handleData = (key, value) => {
     setData((prevData) => ({
@@ -31,14 +61,33 @@ export default function Form() {
     setIsLoading(false)
   }
 
+  const handleUpdate = async () => {
+    setIsLoading(true)
+    try {
+      await updateCategory({ data, image })
+      toast.success('Successfully updated')
+      setData({}) // Reset data after successful creation
+      setImage(null) // Reset image
+      router.push(`/admin/categories`)
+    } catch (error) {
+      console.error(error?.message)
+      toast.error(error?.message || 'An error occurred')
+    }
+    setIsLoading(false)
+  }
+
   return (
     <div className='flex flex-col gap-3 bg-white rounded-xl p-5 w-full md:w-[400px]'>
-      <h1 className='font-semibold'>Create Category</h1>
+      <h1 className='font-semibold'>{id ? 'Update' : 'Create'} Category</h1>
       <form
         className='flex flex-col gap-3'
         onSubmit={(e) => {
           e.preventDefault()
-          handleCreate()
+          if (id) {
+            handleUpdate()
+          } else {
+            handleCreate()
+          }
         }}
       >
         <div className='flex flex-col gap-1'>
@@ -110,7 +159,7 @@ export default function Form() {
           color='primary'
           type='submit'
         >
-          Create
+          {id ? 'Update' : 'Create'}
         </Button>
       </form>
     </div>

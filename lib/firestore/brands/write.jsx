@@ -61,8 +61,8 @@ export const deleteBrand = async ({ id }) => {
   }
 
   try {
-    const categoryDocRef = doc(db, `brands/${id}`)
-    await deleteDoc(categoryDocRef)
+    const brandDocRef = doc(db, `brands/${id}`)
+    await deleteDoc(brandDocRef)
     console.log(`Brand with id ${id} deleted successfully.`)
   } catch (error) {
     console.error('Error deleting brand:', error)

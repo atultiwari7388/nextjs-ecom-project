@@ -4,7 +4,7 @@ import { Menu } from 'lucide-react'
 
 export default function Header({ toggleSidebar }) {
   return (
-    <header className='flex items-center justify-between bg-white border-b px-4 py-4'>
+    <header className=' sticky top-0 flex items-center justify-between bg-white border-b px-4 py-4'>
       {/* Toggle Button */}
       <div className='flex items-center md:hidden'>
         <button
